@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="text-center mb-4 mt-4">🚖 Free Cab Booking Demo</h2>
+
+  <div class="card p-4 mb-4">
+    <form id="cabForm">
+      <div class="mb-3">
+        <label>Pickup City</label>
+        <input type="text" id="pickupCity" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label>Drop City</label>
+        <input type="text" id="dropCity" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Search Cab</button>
+    </form>
+  </div>
+
+  <div id="cabResults"></div>
+</div>
+
+<script>
+document.getElementById("cabForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+    const pickup = document.getElementById("pickupCity").value;
+    const drop = document.getElementById("dropCity").value;
+    const resultsDiv = document.getElementById("cabResults");
+    resultsDiv.innerHTML = "<p>Loading...</p>";
+
+    try {
+        const res = await fetch(`/cab-search/?pickup=${pickup}&drop=${drop}`);
+        const data = await res.json();
+
+        if(data.error){
+            resultsDiv.innerHTML = `<p class="text-danger">❌ ${data.error}</p>`;
+            return;
+        }
+
+        const faresHTML = Object.keys(data.fares).map(type => `<li>🚗 ${type} - ₹${data.fares[type]}</li>`).join('');
+
+        resultsDiv.innerHTML = `
+            <div class="card p-4">
+              <h5>Trip Details</h5>
+              <p><b>Pickup:</b> ${data.pickup}</p>
+              <p><b>Drop:</b> ${data.drop}</p>
+              <p><b>Distance:</b> ${data.distance_km} km</p>
+              <p><b>Estimated Time:</b> ${data.duration_min} mins</p>
+              <hr>
+              <h5>Available Cabs:</h5>
+              <ul>${faresHTML}</ul>
+            </div>
+        `;
+    } catch(err){
+        resultsDiv.innerHTML = `<p class="text-danger">❌ Error fetching data</p>`;
+        console.error(err);
+    }
+});
+</script>
+{% endblock %}

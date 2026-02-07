@@ -1,0 +1,28 @@
+<!-- travel_guides.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+<h2 class="text-center mb-4 mt-4 fw-bold">Travel Guides</h2>
+
+    <p class="text-center mb-5">Expert local guides to help you discover hidden gems and cultural insights.</p>
+
+    <div class="row">
+        {% for guide in guides %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="{{ guide.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ guide.name }}</h5>
+                    <p class="card-text">
+                        <strong>Expertise:</strong> {{ guide.expertise }}<br>
+                        <strong>Experience:</strong> {{ guide.experience }} years
+                    </p>
+                    <a href="#" class="btn btn-primary w-100">Book Guide</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

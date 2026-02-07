@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block content %}
+
+<div class="container mt-3">
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+<section id="contact" class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-4">Get In Touch</h2>
+    <p class="text-center mb-5">Have questions? We're here to help!</p>
+
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <form method="post" class="row g-3">
+          {% csrf_token %}
+
+          <div class="col-md-6">
+            {{ form.name|add_class:"form-control" }}
+          </div>
+
+          <div class="col-md-6">
+            {{ form.email|add_class:"form-control" }}
+          </div>
+
+          <div class="col-12">
+            {{ form.subject|add_class:"form-control" }}
+          </div>
+
+          <div class="col-12">
+            {{ form.message|add_class:"form-control" }}
+          </div>
+
+          <div class="col-12">
+            {{ form.description|add_class:"form-control" }}
+          </div>
+
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary w-100">Send</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

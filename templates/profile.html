@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TourGuidePro — Enhanced Profile</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body { background: #f8f9fa; }
+    .profile-card { max-width: 900px; margin: auto; margin-top: 60px; }
+    .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+    .history-item { background: #fff; border-radius: .5rem; padding: 12px; margin-bottom: 10px; box-shadow: 0 1px 6px rgba(0,0,0,.04); }
+    .section-card { margin-bottom: 20px; }
+    .stats-card { background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); color: white; border-radius: 10px; padding: 15px; }
+    .feature-icon { font-size: 1.5rem; margin-bottom: 10px; color: #0d6efd; }
+    .tab-content { min-height: 200px; }
+    .badge-custom { background-color: #6f42c1; }
+    .map-placeholder { height: 200px; background: #e9ecef; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6c757d; }
+    .travel-type-badge { cursor: pointer; }
+    .travel-type-badge.active { background-color: #0d6efd !important; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="#"><i class="bi bi-compass me-2"></i>TourGuidePro</a>
+    <div class="d-flex ms-auto">
+      <button id="signinBtn" class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#signinModal">Sign in</button>
+      <button id="signupBtn" class="btn btn-light text-primary" data-bs-toggle="modal" data-bs-target="#signupModal">Sign up</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container profile-card">
+  <!-- Stats Overview -->
+  <div class="row mb-4" id="statsOverview" style="display: none;">
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <h4 id="placesCount">0</h4>
+        <p class="mb-0">Places Visited</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <h4 id="countriesCount">0</h4>
+        <p class="mb-0">Countries</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <h4 id="tripsCount">0</h4>
+        <p class="mb-0">Trips</p>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card text-center">
+        <h4 id="daysCount">0</h4>
+        <p class="mb-0">Travel Days</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Profile Card -->
+  <div class="card p-3 section-card">
+    <div class="row g-3 align-items-center">
+      <div class="col-md-4 text-center">
+        <img id="avatarImg" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder" alt="avatar" class="avatar">
+        <div class="mt-3">
+          <input id="avatarInput" type="file" accept="image/*" class="form-control form-control-sm d-none">
+          <button id="avatarEditBtn" class="btn btn-sm btn-outline-secondary mt-2 d-none"><i class="bi bi-pencil"></i> Change Photo</button>
+        </div>
+        <div class="mt-3" id="profileLevel" style="display: none;">
+          <span class="badge bg-warning text-dark"><i class="bi bi-award"></i> Explorer</span>
+        </div>
+      </div>
+
+      <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h3 id="displayName">Guest User</h3>
+            <p class="mb-1 text-muted" id="displayEmail">Not signed in</p>
+            <p id="displayBio" class="small text-muted">Profile bio will appear here — add a short description about yourself as a tourist or traveler.</p>
+            <div id="userTags" class="mt-2"></div>
+          </div>
+          <div>
+            <button id="editProfileBtn" class="btn btn-outline-primary btn-sm d-none"><i class="bi bi-pencil-square"></i> Edit</button>
+            <button id="logoutBtn" class="btn btn-danger btn-sm d-none"><i class="bi bi-box-arrow-right"></i> Logout</button>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Tabs for different sections -->
+        <ul class="nav nav-tabs" id="profileTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="travel-tab" data-bs-toggle="tab" data-bs-target="#travel" type="button" role="tab">Travel History</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="wishlist-tab" data-bs-toggle="tab" data-bs-target="#wishlist" type="button" role="tab">Wishlist</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="trips-tab" data-bs-toggle="tab" data-bs-target="#trips" type="button" role="tab">My Trips</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="photos-tab" data-bs-toggle="tab" data-bs-target="#photos" type="button" role="tab">Photos</button>
+          </li>
+        </ul>
+
+        <div class="tab-content p-3 border border-top-0 rounded-bottom" id="profileTabsContent">
+          <!-- Travel History Tab -->
+          <div class="tab-pane fade show active" id="travel" role="tabpanel">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">My Travel History</h5>
+              <div>
+                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#importModal"><i class="bi bi-upload"></i> Import</button>
+                <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#exportModal"><i class="bi bi-download"></i> Export</button>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <span class="me-2">Filter by:</span>
+              <div class="btn-group btn-group-sm" role="group">
+                <input type="radio" class="btn-check" name="travelType" id="type-all" autocomplete="off" checked>
+                <label class="btn btn-outline-primary travel-type-badge" for="type-all">All</label>
+                
+                <input type="radio" class="btn-check" name="travelType" id="type-leisure" autocomplete="off">
+                <label class="btn btn-outline-primary travel-type-badge" for="type-leisure">Leisure</label>
+                
+                <input type="radio" class="btn-check" name="travelType" id="type-business" autocomplete="off">
+                <label class="btn btn-outline-primary travel-type-badge" for="type-business">Business</label>
+                
+                <input type="radio" class="btn-check" name="travelType" id="type-adventure" autocomplete="off">
+                <label class="btn btn-outline-primary travel-type-badge" for="type-adventure">Adventure</label>
+              </div>
+            </div>
+            
+            <div id="historyList">
+              <p class="text-muted small">No history yet. After signing in, add places you visited.</p>
+            </div>
+
+            <div id="historyControls" class="mt-3 d-none">
+              <div class="input-group mb-2">
+                <input id="historyInput" type="text" class="form-control" placeholder="Place name (e.g., Paris, France)">
+                <button id="addHistoryBtn" class="btn btn-primary">Add</button>
+              </div>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <input id="historyDate" type="date" class="form-control form-control-sm" placeholder="Date visited">
+                </div>
+                <div class="col-md-6">
+                  <select id="historyType" class="form-select form-select-sm">
+                    <option value="leisure">Leisure</option>
+                    <option value="business">Business</option>
+                    <option value="adventure">Adventure</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wishlist Tab -->
+          <div class="tab-pane fade" id="wishlist" role="tabpanel">
+            <h5 class="mb-3">My Travel Wishlist</h5>
+            <div id="wishlistList">
+              <p class="text-muted small">Your wishlist is empty. Add places you'd like to visit.</p>
+            </div>
+            <div id="wishlistControls" class="mt-3 d-none">
+              <div class="input-group">
+                <input id="wishlistInput" type="text" class="form-control" placeholder="Add a destination to your wishlist">
+                <button id="addWishlistBtn" class="btn btn-success">Add to Wishlist</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trips Tab -->
+          <div class="tab-pane fade" id="trips" role="tabpanel">
+            <h5 class="mb-3">My Planned Trips</h5>
+            <div id="tripsList">
+              <p class="text-muted small">You haven't planned any trips yet.</p>
+            </div>
+            <div id="tripsControls" class="mt-3 d-none">
+              <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#tripModal"><i class="bi bi-plus-circle"></i> Plan New Trip</button>
+            </div>
+          </div>
+
+          <!-- Photos Tab -->
+          <div class="tab-pane fade" id="photos" role="tabpanel">
+            <h5 class="mb-3">My Travel Photos</h5>
+            <div id="photosList" class="row">
+              <p class="text-muted small">No photos uploaded yet.</p>
+            </div>
+            <div id="photosControls" class="mt-3 d-none">
+              <input type="file" id="photoUpload" accept="image/*" multiple class="form-control">
+              <button id="uploadPhotosBtn" class="btn btn-primary mt-2">Upload Photos</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Section -->
+  <div class="card p-3 section-card d-none" id="mapSection">
+    <h5 class="mb-3">My Travel Map</h5>
+    <div class="map-placeholder">
+      <div class="text-center">
+        <i class="bi bi-map display-4 mb-2"></i>
+        <p>Interactive map showing your visited places</p>
+        <small class="text-muted">(Map integration would be implemented in a production app)</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div class="modal fade" id="signupModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="signupForm" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Create account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input id="signupName" type="text" class="form-control" required>
+            <div class="invalid-feedback">Please provide your name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input id="signupEmail" type="email" class="form-control" required>
+            <div class="invalid-feedback">Enter a valid email.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input id="signupPassword" type="password" minlength="6" class="form-control" required>
+            <div class="invalid-feedback">Password must be at least 6 characters.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Short bio (optional)</label>
+            <textarea id="signupBio" class="form-control" rows="2"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Travel Preferences (optional)</label>
+            <div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="pref-beach" value="beach">
+                <label class="form-check-label" for="pref-beach">Beach</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="pref-mountains" value="mountains">
+                <label class="form-check-label" for="pref-mountains">Mountains</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="pref-city" value="city">
+                <label class="form-check-label" for="pref-city">City</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="pref-adventure" value="adventure">
+                <label class="form-check-label" for="pref-adventure">Adventure</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Sign up</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Signin Modal -->
+<div class="modal fade" id="signinModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="signinForm" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Sign in</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input id="signinEmail" type="email" class="form-control" required>
+            <div class="invalid-feedback">Enter your email.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password</label>
+            <input id="signinPassword" type="password" class="form-control" required>
+            <div class="invalid-feedback">Enter your password.</div>
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="rememberMe">
+            <label class="form-check-label" for="rememberMe">Remember me</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Sign in</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="editForm" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Edit profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Full name</label>
+            <input id="editName" type="text" class="form-control" required>
+            <div class="invalid-feedback">Please provide your name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Bio</label>
+            <textarea id="editBio" class="form-control" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Travel Preferences</label>
+            <div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="edit-pref-beach" value="beach">
+                <label class="form-check-label" for="edit-pref-beach">Beach</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="edit-pref-mountains" value="mountains">
+                <label class="form-check-label" for="edit-pref-mountains">Mountains</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="edit-pref-city" value="city">
+                <label class="form-check-label" for="edit-pref-city">City</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" id="edit-pref-adventure" value="adventure">
+                <label class="form-check-label" for="edit-pref-adventure">Adventure</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Trip Planning Modal -->
+<div class="modal fade" id="tripModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form id="tripForm" class="needs-validation" novalidate>
+        <div class="modal-header">
+          <h5 class="modal-title">Plan a New Trip</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Trip Name</label>
+            <input id="tripName" type="text" class="form-control" required placeholder="e.g., European Adventure 2024">
+            <div class="invalid-feedback">Please provide a trip name.</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Destination</label>
+            <input id="tripDestination" type="text" class="form-control" required placeholder="e.g., France, Italy, Spain">
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Start Date</label>
+              <input id="tripStartDate" type="date" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">End Date</label>
+              <input id="tripEndDate" type="date" class="form-control" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea id="tripNotes" class="form-control" rows="3" placeholder="Any special plans or considerations..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Trip</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Import/Export Modals -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Import Travel Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Upload a JSON file to import your travel history.</p>
+        <input type="file" id="importFile" class="form-control" accept=".json">
+        <div class="mt-3">
+          <button id="importBtn" class="btn btn-primary">Import</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Export Travel Data</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Download your travel data as a JSON file for backup or use in other applications.</p>
+        <button id="exportBtn" class="btn btn-success">Export Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Enhanced client-side auth + profile using localStorage
+const $ = id => document.getElementById(id);
+const signupForm = $('signupForm');
+const signinForm = $('signinForm');
+const editForm = $('editForm');
+const tripForm = $('tripForm');
+const historyList = $('historyList');
+const wishlistList = $('wishlistList');
+const tripsList = $('tripsList');
+const photosList = $('photosList');
+const historyControls = $('historyControls');
+const wishlistControls = $('wishlistControls');
+const tripsControls = $('tripsControls');
+const photosControls = $('photosControls');
+const addHistoryBtn = $('addHistoryBtn');
+const addWishlistBtn = $('addWishlistBtn');
+const historyInput = $('historyInput');
+const wishlistInput = $('wishlistInput');
+const displayName = $('displayName');
+const displayEmail = $('displayEmail');
+const displayBio = $('displayBio');
+const editProfileBtn = $('editProfileBtn');
+const logoutBtn = $('logoutBtn');
+const avatarEditBtn = $('avatarEditBtn');
+const avatarInput = $('avatarInput');
+const avatarImg = $('avatarImg');
+const statsOverview = $('statsOverview');
+const mapSection = $('mapSection');
+const userTags = $('userTags');
+const profileLevel = $('profileLevel');
+
+// Load users from localStorage
+function loadUsers() {
+  return JSON.parse(localStorage.getItem('tg_users') || '[]');
+}
+
+function saveUsers(u) {
+  localStorage.setItem('tg_users', JSON.stringify(u));
+}
+
+function getCurrent() {
+  return JSON.parse(localStorage.getItem('tg_current') || 'null');
+}
+
+function setCurrent(u) {
+  localStorage.setItem('tg_current', JSON.stringify(u));
+  if ($('rememberMe') && $('rememberMe').checked) {
+    localStorage.setItem('tg_remember', 'true');
+  }
+}
+
+function clearCurrent() {
+  localStorage.removeItem('tg_current');
+}
+
+// Show guest view
+function showGuest() {
+  displayName.textContent = 'Guest User';
+  displayEmail.textContent = 'Not signed in';
+  displayBio.textContent = 'Profile bio will appear here — add a short description about yourself as a tourist or traveler.';
+  editProfileBtn.classList.add('d-none');
+  logoutBtn.classList.add('d-none');
+  historyControls.classList.add('d-none');
+  wishlistControls.classList.add('d-none');
+  tripsControls.classList.add('d-none');
+  photosControls.classList.add('d-none');
+  avatarEditBtn.classList.add('d-none');
+  statsOverview.style.display = 'none';
+  mapSection.classList.add('d-none');
+  userTags.innerHTML = '';
+  profileLevel.style.display = 'none';
+  
+  renderHistory([]);
+  renderWishlist([]);
+  renderTrips([]);
+  renderPhotos([]);
+}
+
+// Show user profile
+function showProfile(user) {
+  displayName.textContent = user.name;
+  displayEmail.textContent = user.email;
+  displayBio.textContent = user.bio || '—';
+  editProfileBtn.classList.remove('d-none');
+  logoutBtn.classList.remove('d-none');
+  historyControls.classList.remove('d-none');
+  wishlistControls.classList.remove('d-none');
+  tripsControls.classList.remove('d-none');
+  photosControls.classList.remove('d-none');
+  avatarEditBtn.classList.remove('d-none');
+  statsOverview.style.display = 'flex';
+  mapSection.classList.remove('d-none');
+  
+  if (user.avatar) avatarImg.src = user.avatar;
+  
+  // Render user tags
+  renderUserTags(user.preferences || []);
+  
+  // Calculate and display stats
+  updateStats(user);
+  
+  // Determine and display profile level
+  updateProfileLevel(user);
+  
+  renderHistory(user.history || []);
+  renderWishlist(user.wishlist || []);
+  renderTrips(user.trips || []);
+  renderPhotos(user.photos || []);
+}
+
+// Render user tags based on preferences
+function renderUserTags(preferences) {
+  if (!preferences || preferences.length === 0) {
+    userTags.innerHTML = '<span class="badge bg-secondary">No preferences set</span>';
+    return;
+  }
+  
+  userTags.innerHTML = preferences.map(pref => 
+    `<span class="badge bg-primary me-1">${pref}</span>`
+  ).join('');
+}
+
+// Update statistics
+function updateStats(user) {
+  const history = user.history || [];
+  const trips = user.trips || [];
+  
+  // Count unique countries (simplified)
+  const countries = [...new Set(history.map(item => {
+    // Simple extraction of country from place name (in a real app, use geocoding)
+    const parts = item.place.split(',');
+    return parts.length > 1 ? parts[parts.length-1].trim() : 'Unknown';
+  }))].filter(c => c !== 'Unknown');
+  
+  // Calculate total travel days
+  let totalDays = 0;
+  trips.forEach(trip => {
+    if (trip.startDate && trip.endDate) {
+      const start = new Date(trip.startDate);
+      const end = new Date(trip.endDate);
+      const diffTime = Math.abs(end - start);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      totalDays += diffDays;
+    }
+  });
+  
+  $('placesCount').textContent = history.length;
+  $('countriesCount').textContent = countries.length;
+  $('tripsCount').textContent = trips.length;
+  $('daysCount').textContent = totalDays;
+}
+
+// Update profile level based on activity
+function updateProfileLevel(user) {
+  const historyCount = (user.history || []).length;
+  let level = 'Beginner';
+  let badgeClass = 'bg-secondary';
+  
+  if (historyCount >= 20) {
+    level = 'Globetrotter';
+    badgeClass = 'bg-danger';
+  } else if (historyCount >= 10) {
+    level = 'Explorer';
+    badgeClass = 'bg-warning text-dark';
+  } else if (historyCount >= 5) {
+    level = 'Traveler';
+    badgeClass = 'bg-info';
+  } else if (historyCount > 0) {
+    level = 'Beginner';
+    badgeClass = 'bg-success';
+  }
+  
+  profileLevel.innerHTML = `<span class="badge ${badgeClass}"><i class="bi bi-award"></i> ${level}</span>`;
+  profileLevel.style.display = 'block';
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]);
+}
+
+// Render travel history
+function renderHistory(list) {
+  if (!list || list.length === 0) {
+    historyList.innerHTML = '<p class="text-muted small">No history yet. After signing in, add places you visited.</p>';
+    return;
+  }
+  
+  historyList.innerHTML = list.map((h, i) => `
+    <div class="history-item d-flex justify-content-between align-items-start">
+      <div>
+        <strong>${escapeHtml(h.place)}</strong>
+        <div class="small text-muted">
+          ${h.date ? `Visited: ${escapeHtml(h.date)}` : ''}
+          ${h.type ? ` • Type: ${escapeHtml(h.type)}` : ''}
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-danger" data-index="${i}" onclick="removeHistory(event)"><i class='bi bi-trash'></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render wishlist
+function renderWishlist(list) {
+  if (!list || list.length === 0) {
+    wishlistList.innerHTML = '<p class="text-muted small">Your wishlist is empty. Add places you\'d like to visit.</p>';
+    return;
+  }
+  
+  wishlistList.innerHTML = list.map((w, i) => `
+    <div class="history-item d-flex justify-content-between align-items-start">
+      <div>
+        <strong>${escapeHtml(w.place)}</strong>
+        ${w.note ? `<div class="small text-muted">${escapeHtml(w.note)}</div>` : ''}
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-success me-1" data-index="${i}" onclick="markAsVisited(event)"><i class='bi bi-check-lg'></i></button>
+        <button class="btn btn-sm btn-outline-danger" data-index="${i}" onclick="removeWishlist(event)"><i class='bi bi-trash'></i></button>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render trips
+function renderTrips(list) {
+  if (!list || list.length === 0) {
+    tripsList.innerHTML = '<p class="text-muted small">You haven\'t planned any trips yet.</p>';
+    return;
+  }
+  
+  tripsList.innerHTML = list.map((t, i) => `
+    <div class="history-item">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <strong>${escapeHtml(t.name)}</strong>
+          <div class="small text-muted">
+            ${t.destination ? `Destination: ${escapeHtml(t.destination)}` : ''}
+            ${t.startDate ? ` • From: ${escapeHtml(t.startDate)}` : ''}
+            ${t.endDate ? ` to ${escapeHtml(t.endDate)}` : ''}
+          </div>
+          ${t.notes ? `<div class="small mt-1">${escapeHtml(t.notes)}</div>` : ''}
+        </div>
+        <div>
+          <button class="btn btn-sm btn-outline-danger" data-index="${i}" onclick="removeTrip(event)"><i class='bi bi-trash'></i></button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Render photos
+function renderPhotos(list) {
+  if (!list || list.length === 0) {
+    photosList.innerHTML = '<p class="text-muted small">No photos uploaded yet.</p>';
+    return;
+  }
+  
+  photosList.innerHTML = '<div class="row">' + list.map((p, i) => `
+    <div class="col-md-4 mb-3">
+      <div class="card">
+        <img src="${p.url}" class="card-img-top" style="height: 150px; object-fit: cover;" alt="Travel photo">
+        <div class="card-body p-2">
+          <button class="btn btn-sm btn-outline-danger w-100" data-index="${i}" onclick="removePhoto(event)">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('') + '</div>';
+}
+
+// Signup
+signupForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!signupForm.checkValidity()) {
+    signupForm.classList.add('was-validated');
+    return;
+  }
+  
+  const name = $('signupName').value.trim();
+  const email = $('signupEmail').value.trim().toLowerCase();
+  const password = $('signupPassword').value;
+  const bio = $('signupBio').value.trim();
+  
+  // Get travel preferences
+  const preferences = [];
+  if ($('pref-beach').checked) preferences.push('Beach');
+  if ($('pref-mountains').checked) preferences.push('Mountains');
+  if ($('pref-city').checked) preferences.push('City');
+  if ($('pref-adventure').checked) preferences.push('Adventure');
+  
+  const users = loadUsers();
+  if (users.find(u => u.email === email)) {
+    alert('Email already exists. Please sign in.');
+    return;
+  }
+  
+  const user = {
+    name,
+    email,
+    password,
+    bio,
+    preferences,
+    history: [],
+    wishlist: [],
+    trips: [],
+    photos: [],
+    avatar: null
+  };
+  
+  users.push(user);
+  saveUsers(users);
+  setCurrent(user);
+  
+  new bootstrap.Modal(document.getElementById('signupModal')).hide();
+  refreshUI();
+});
+
+// Signin
+signinForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!signinForm.checkValidity()) {
+    signinForm.classList.add('was-validated');
+    return;
+  }
+  
+  const email = $('signinEmail').value.trim().toLowerCase();
+  const password = $('signinPassword').value;
+  const users = loadUsers();
+  const user = users.find(u => u.email === email && u.password === password);
+  
+  if (!user) {
+    alert('Invalid credentials.');
+    return;
+  }
+  
+  setCurrent(user);
+  new bootstrap.Modal(document.getElementById('signinModal')).hide();
+  refreshUI();
+});
+
+// Edit profile
+editProfileBtn.addEventListener('click', () => {
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  $('editName').value = cur.name;
+  $('editBio').value = cur.bio || '';
+  
+  // Set travel preferences
+  const prefs = cur.preferences || [];
+  $('edit-pref-beach').checked = prefs.includes('Beach');
+  $('edit-pref-mountains').checked = prefs.includes('Mountains');
+  $('edit-pref-city').checked = prefs.includes('City');
+  $('edit-pref-adventure').checked = prefs.includes('Adventure');
+  
+  new bootstrap.Modal(document.getElementById('editModal')).show();
+});
+
+editForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!editForm.checkValidity()) {
+    editForm.classList.add('was-validated');
+    return;
+  }
+  
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.name = $('editName').value.trim();
+  cur.bio = $('editBio').value.trim();
+  
+  // Update travel preferences
+  cur.preferences = [];
+  if ($('edit-pref-beach').checked) cur.preferences.push('Beach');
+  if ($('edit-pref-mountains').checked) cur.preferences.push('Mountains');
+  if ($('edit-pref-city').checked) cur.preferences.push('City');
+  if ($('edit-pref-adventure').checked) cur.preferences.push('Adventure');
+  
+  // Update user in storage
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  new bootstrap.Modal(document.getElementById('editModal')).hide();
+  refreshUI();
+});
+
+// Logout
+logoutBtn.addEventListener('click', () => {
+  clearCurrent();
+  avatarImg.src = 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400&auto=format&fit=crop&ixlib=rb-4.0.3&s=placeholder';
+  refreshUI();
+});
+
+// Add history
+addHistoryBtn.addEventListener('click', () => {
+  const place = historyInput.value.trim();
+  if (!place) return;
+  
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.history = cur.history || [];
+  const date = $('historyDate').value;
+  const type = $('historyType').value;
+  
+  cur.history.unshift({
+    place,
+    date,
+    type
+  });
+  
+  // Update storage
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  historyInput.value = '';
+  $('historyDate').value = '';
+  renderHistory(cur.history);
+  updateStats(cur);
+  updateProfileLevel(cur);
+});
+
+// Remove history
+window.removeHistory = function(e) {
+  const i = Number(e.currentTarget.dataset.index);
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.history.splice(i, 1);
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  renderHistory(cur.history);
+  updateStats(cur);
+  updateProfileLevel(cur);
+}
+
+// Add to wishlist
+addWishlistBtn.addEventListener('click', () => {
+  const place = wishlistInput.value.trim();
+  if (!place) return;
+  
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.wishlist = cur.wishlist || [];
+  cur.wishlist.unshift({
+    place,
+    note: '',
+    added: new Date().toISOString().split('T')[0]
+  });
+  
+  // Update storage
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  wishlistInput.value = '';
+  renderWishlist(cur.wishlist);
+});
+
+// Remove from wishlist
+window.removeWishlist = function(e) {
+  const i = Number(e.currentTarget.dataset.index);
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.wishlist.splice(i, 1);
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  renderWishlist(cur.wishlist);
+}
+
+// Mark wishlist item as visited
+window.markAsVisited = function(e) {
+  const i = Number(e.currentTarget.dataset.index);
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  const wishlistItem = cur.wishlist[i];
+  
+  // Add to history
+  cur.history = cur.history || [];
+  cur.history.unshift({
+    place: wishlistItem.place,
+    date: new Date().toISOString().split('T')[0],
+    type: 'leisure'
+  });
+  
+  // Remove from wishlist
+  cur.wishlist.splice(i, 1);
+  
+  // Update storage
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  renderWishlist(cur.wishlist);
+  renderHistory(cur.history);
+  updateStats(cur);
+  updateProfileLevel(cur);
+}
+
+// Add trip
+tripForm.addEventListener('submit', e => {
+  e.preventDefault();
+  if (!tripForm.checkValidity()) {
+    tripForm.classList.add('was-validated');
+    return;
+  }
+  
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.trips = cur.trips || [];
+  cur.trips.unshift({
+    name: $('tripName').value.trim(),
+    destination: $('tripDestination').value.trim(),
+    startDate: $('tripStartDate').value,
+    endDate: $('tripEndDate').value,
+    notes: $('tripNotes').value.trim(),
+    created: new Date().toISOString().split('T')[0]
+  });
+  
+  // Update storage
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  new bootstrap.Modal(document.getElementById('tripModal')).hide();
+  tripForm.reset();
+  renderTrips(cur.trips);
+  updateStats(cur);
+});
+
+// Remove trip
+window.removeTrip = function(e) {
+  const i = Number(e.currentTarget.dataset.index);
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.trips.splice(i, 1);
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  renderTrips(cur.trips);
+  updateStats(cur);
+}
+
+// Avatar change
+avatarEditBtn.addEventListener('click', () => avatarInput.click());
+avatarInput.addEventListener('change', async (ev) => {
+  const file = ev.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = () => {
+    avatarImg.src = reader.result;
+    const cur = getCurrent();
+    if (!cur) return;
+    
+    cur.avatar = reader.result;
+    const users = loadUsers();
+    const idx = users.findIndex(u => u.email === cur.email);
+    if (idx > -1) {
+      users[idx] = cur;
+      saveUsers(users);
+      setCurrent(cur);
+    }
+  };
+  reader.readAsDataURL(file);
+});
+
+// Photo upload
+$('uploadPhotosBtn').addEventListener('click', () => {
+  const files = $('photoUpload').files;
+  if (!files || files.length === 0) return;
+  
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.photos = cur.photos || [];
+  
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+      cur.photos.unshift({
+        url: e.target.result,
+        name: file.name,
+        uploaded: new Date().toISOString().split('T')[0]
+      });
+      
+      // Update storage after all photos are processed
+      if (i === files.length - 1) {
+        const users = loadUsers();
+        const idx = users.findIndex(u => u.email === cur.email);
+        if (idx > -1) {
+          users[idx] = cur;
+          saveUsers(users);
+          setCurrent(cur);
+        }
+        
+        renderPhotos(cur.photos);
+      }
+    };
+    
+    reader.readAsDataURL(file);
+  }
+  
+  $('photoUpload').value = '';
+});
+
+// Remove photo
+window.removePhoto = function(e) {
+  const i = Number(e.currentTarget.dataset.index);
+  const cur = getCurrent();
+  if (!cur) return;
+  
+  cur.photos.splice(i, 1);
+  const users = loadUsers();
+  const idx = users.findIndex(u => u.email === cur.email);
+  if (idx > -1) {
+    users[idx] = cur;
+    saveUsers(users);
+    setCurrent(cur);
+  }
+  
+  renderPhotos(cur.photos);
+}
+
+// Export data
+$('exportBtn').addEventListener('click', () => {
+  const cur = getCurrent();
+  if (!cur) {
+    alert('Please sign in to export your data.');
+    return;
+  }
+  
+  // Create a clean copy without password
+  const { password, ...exportData } = cur;
+  
+  const dataStr = JSON.stringify(exportData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  
+  const url = URL.createObjectURL(dataBlob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `tourguidepro-data-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+  
+  new bootstrap.Modal(document.getElementById('exportModal')).hide();
+});
+
+// Import data
+$('importBtn').addEventListener('click', () => {
+  const file = $('importFile').files[0];
+  if (!file) {
+    alert('Please select a file to import.');
+    return;
+  }
+  
+  const cur = getCurrent();
+  if (!cur) {
+    alert('Please sign in to import data.');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const importedData = JSON.parse(e.target.result);
+      
+      // Merge imported data with current user data
+      if (importedData.history) {
+        cur.history = [...importedData.history, ...cur.history];
+      }
+      
+      if (importedData.wishlist) {
+        cur.wishlist = [...importedData.wishlist, ...cur.wishlist];
+      }
+      
+      if (importedData.trips) {
+        cur.trips = [...importedData.trips, ...cur.trips];
+      }
+      
+      // Update storage
+      const users = loadUsers();
+      const idx = users.findIndex(u => u.email === cur.email);
+      if (idx > -1) {
+        users[idx] = cur;
+        saveUsers(users);
+        setCurrent(cur);
+      }
+      
+      refreshUI();
+      alert('Data imported successfully!');
+      new bootstrap.Modal(document.getElementById('importModal')).hide();
+    } catch (error) {
+      alert('Error importing data. Please check the file format.');
+      console.error(error);
+    }
+  };
+  
+  reader.readAsText(file);
+});
+
+// Travel type filtering
+document.querySelectorAll('input[name="travelType"]').forEach(radio => {
+  radio.addEventListener('change', (e) => {
+    const cur = getCurrent();
+    if (!cur || !cur.history) return;
+    
+    const type = e.target.id.replace('type-', '');
+    let filteredHistory;
+    
+    if (type === 'all') {
+      filteredHistory = cur.history;
+    } else {
+      filteredHistory = cur.history.filter(item => item.type === type);
+    }
+    
+    renderHistory(filteredHistory);
+  });
+});
+
+// Keep UI in sync
+function refreshUI() {
+  const cur = getCurrent();
+  if (cur) showProfile(cur);
+  else showGuest();
+}
+
+// On page load
+(function init() {
+  // Check if user was remembered
+  if (localStorage.getItem('tg_remember') === 'true') {
+    const cur = getCurrent();
+    if (cur) {
+      setCurrent(cur);
+    }
+  }
+  
+  refreshUI();
+})();
+</script>
+</body>
+</html>

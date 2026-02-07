@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="insurance-card">
+        <i class="bi bi-shield-check"></i>
+        <h2>Travel Insurance</h2>
+        <p>We provide comprehensive insurance plans to ensure your trips are safe and worry-free.</p>
+        
+        <ul class="insurance-list">
+          <li>Medical coverage during travel</li>
+          <li>Trip cancellation and interruption protection</li>
+          <li>Lost luggage and personal belongings coverage</li>
+          <li>Emergency assistance and support</li>
+          <li>Accidental death and disability coverage</li>
+        </ul>
+
+  
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<!-- Optional CSS -->
+<style>
+.insurance-card {
+  background: #fff;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease-in-out;
+}
+.insurance-card:hover {
+  transform: translateY(-5px);
+}
+.insurance-card i {
+  font-size: 50px;
+  color: #0d6efd;
+  margin-bottom: 20px;
+}
+.insurance-list {
+  text-align: left;
+  margin-top: 20px;
+}
+.insurance-list li {
+  margin-bottom: 10px;
+}
+</style>
